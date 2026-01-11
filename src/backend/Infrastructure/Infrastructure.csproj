@@ -20,9 +20,10 @@
   </ItemGroup>
   
   <ItemGroup>
-    <Folder Include="DataAccess\" />
-    <Folder Include="Extensions\" />
-    <Folder Include="ImplementationContract\" />
+    <Folder Include="DataAccess\EntityConfigurations\" />
+    <Folder Include="Extensions\Authentication\" />
+    <Folder Include="ImplementationContract\Repasitories\" />
+    <Folder Include="ImplementationContract\Services\" />
   </ItemGroup>
 
   <ItemGroup>
