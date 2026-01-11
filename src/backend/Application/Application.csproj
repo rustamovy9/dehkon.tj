@@ -15,8 +15,6 @@
  
   <ItemGroup>
     <Folder Include="Contracts\IServices\" />
-    
-    <Folder Include="Filters\" />
   </ItemGroup>
   
   <ItemGroup>

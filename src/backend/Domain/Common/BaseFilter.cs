@@ -1,6 +1,6 @@
 ﻿namespace Domain.Common;
 
-public class BaseFilter
+public record BaseFilter
 {
     public int PageSize { get; init; }
     public int PageNumber { get; init; }
