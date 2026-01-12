@@ -20,7 +20,6 @@
   </ItemGroup>
   
   <ItemGroup>
-    <Folder Include="DataAccess\EntityConfigurations\" />
     <Folder Include="Extensions\Authentication\" />
     <Folder Include="ImplementationContract\Repasitories\" />
     <Folder Include="ImplementationContract\Services\" />

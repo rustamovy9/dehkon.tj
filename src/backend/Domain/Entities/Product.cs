@@ -16,4 +16,5 @@ public class Product : BaseEntity
     public User Seller { get; set; } = null!;
     public ICollection<OrderItem> OrderItems { get; set; } = [];
     public ICollection<CartItem> CartItems { get; set; } = [];
+    public ICollection<Review> Reviews { get; set; } = [];
 }

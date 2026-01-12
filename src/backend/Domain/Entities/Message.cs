@@ -9,5 +9,6 @@ public class Message : BaseEntity
     public string Text { get; set; } = null!;
     public bool IsRead { get; set; }
 
-    public Chat? Chat { get; set; }
+    public Chat Chat { get; set; } = null!;
+    public User Sender { get; set; } = null!;
 }

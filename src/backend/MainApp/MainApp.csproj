@@ -22,7 +22,8 @@
 
   <ItemGroup>
     <Folder Include="Controllers\" />
-    <Folder Include="HelpersApi\" />
+    <Folder Include="HelpersApi\ApiConventions\" />
+    <Folder Include="HelpersApi\Extensions\" />
   </ItemGroup>
 
   <ItemGroup>
