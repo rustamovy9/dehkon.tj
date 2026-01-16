@@ -1,4 +1,6 @@
-﻿namespace Application.DTO_s;
+﻿using Microsoft.AspNetCore.Http;
+
+namespace Application.DTO_s;
 
 public record UserReadInfo(
     int Id,
@@ -13,5 +15,5 @@ public record UserUpdateInfo(
     string UserName,
     string FullName,
     string? PhoneNumber,
-    string? ProfilePhotoUrl);
+    IFormFile? ProfilePhotoUrl);
 

@@ -2,6 +2,6 @@
 
 public record CartReadInfo(
     int Id,
-    IReadOnlyCollection<CartItemReadInfo> Items,
+    ICollection<CartItemReadInfo> Items,
     decimal TotalPrice
 );

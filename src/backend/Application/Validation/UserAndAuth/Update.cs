@@ -21,9 +21,5 @@ public class UpdateUserInfoValidator : AbstractValidator<UserUpdateInfo>
             .Matches(@"^\+992\d{9}$")
             .When(x => !string.IsNullOrEmpty(x.PhoneNumber))
             .WithMessage("Phone must be in format +992XXXXXXXXX");
-        
-        RuleFor(x => x.ProfilePhotoUrl)
-            .MaximumLength(500)
-            .When(x => !string.IsNullOrEmpty(x.ProfilePhotoUrl));
     }
 }

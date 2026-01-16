@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Domain.Entities;
 
 namespace Application.DTO_s;
 
@@ -8,6 +8,9 @@ public class LoginRequest
     public string Password { get; set; } = null!;
 }
 
+public record LoginResult(
+    string AccessToken);
+
 public class RegisterRequest
 {
     public string UserName { get; set; } = null!;
@@ -16,6 +19,8 @@ public class RegisterRequest
     public string PhoneNumber { get; set; } = null!;
     public string Password { get; set; } = null!;
     public string ConfirmPassword { get; set; } = null!;
+
+    public string Role { get; set; } = null!;
 }
 
 public class ChangePasswordRequest

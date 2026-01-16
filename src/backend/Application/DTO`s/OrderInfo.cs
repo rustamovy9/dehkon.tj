@@ -12,7 +12,7 @@ public record OrderDetailReadInfo(
     OrderStatus Status,
     decimal TotalPrice, 
     DateTimeOffset CreatedAt,
-    IReadOnlyCollection<OrderItemReadInfo> Items);
+    ICollection<OrderItemReadInfo> Items);
     
 public record OrderShortReadInfo(
     int Id,

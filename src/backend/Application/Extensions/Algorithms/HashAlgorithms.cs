@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Application.Extensions.Algorithms;
 
-public class HashAlgorithm
+public class HashAlgorithms
 {
     public static string ConvertToHash(string rawData)
     {

@@ -15,7 +15,7 @@ public class BaseResult
 
     public static BaseResult Success() => new(true, Error.None());
     
-    public static BaseResult Failure() => new(false, Error.None());
+    public static BaseResult Failure(Error error) => new(false, error);
     
 
 }

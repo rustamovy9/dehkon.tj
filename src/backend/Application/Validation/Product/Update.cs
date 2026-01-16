@@ -12,10 +12,6 @@ public class UpdateProductInfoValidator : AbstractValidator<ProductUpdateInfo>
             .WithMessage("Product name is required")
             .MaximumLength(50);
 
-        RuleFor(i => i.ImageUrl)
-            .MaximumLength(500)
-            .When(x => !string.IsNullOrEmpty(x.ImageUrl));
-
         RuleFor(p=>p.PricePerKg)
             .GreaterThan(0)
             .WithMessage("Price per kg is must be greater than 0");

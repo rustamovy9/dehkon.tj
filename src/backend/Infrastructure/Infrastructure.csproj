@@ -18,14 +18,9 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.11"/>
   </ItemGroup>
-  
-  <ItemGroup>
-    <Folder Include="Extensions\Authentication\" />
-    <Folder Include="ImplementationContract\Repasitories\" />
-    <Folder Include="ImplementationContract\Services\" />
-  </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Application\Application.csproj" />
     <ProjectReference Include="..\Domain\Domain.csproj" />
   </ItemGroup>
 
