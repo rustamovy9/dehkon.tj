@@ -1,12 +1,10 @@
 ﻿using Application.Contracts.IServices;
 using Application.DTO_s;
 using Application.Filters;
-using Application.Validation.Chat;
 using Domain.Constants;
 using MainApp.HelpersApi.Extensions.ResultPattern;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace MainApp.Controllers;
 
