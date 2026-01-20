@@ -17,6 +17,7 @@ public static class UserMap
                 user.ProfilePhotoUrl,
                 user.Role.Name);
 
+    
     public static  async Task<User> ToEntity(this User entity, UserUpdateInfo updateInfo, IFileService fileService)
     {
         if (updateInfo.ProfilePhotoUrl is not null)

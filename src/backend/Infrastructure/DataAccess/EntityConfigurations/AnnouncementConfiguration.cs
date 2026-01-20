@@ -16,7 +16,7 @@ public class AnnouncementConfiguration : IEntityTypeConfiguration<Announcement>
 
         builder.Property(x => x.Content)
             .IsRequired()
-            .HasColumnType("nvarchar(max)");
+            .HasColumnType("text");
         
         builder.HasIndex(x => x.UserId);
         

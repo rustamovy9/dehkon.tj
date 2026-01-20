@@ -13,6 +13,15 @@ public static class ReviewMap
             Rating = createInfo.Rating,
             Comment = createInfo.Comment
         };
+    
+    public static Review ToEntity(this Review review, ReviewUpdateInfo updateInfo)
+    {
+        review.Rating = updateInfo.Rating;
+        review.Comment = updateInfo.Comment;
+        review.Version++;
+        review.UpdatedAt = DateTimeOffset.Now;
+        return review;
+    }
 
     public static ReviewReadInfo ToRead(this Review entity)
         => new(

@@ -1,35 +1,89 @@
-﻿using Application.Contracts.IRepositories;
+﻿using System.Collections;
+using Application.Contracts.IRepositories;
 using Application.Contracts.IServices;
 using Application.DTO_s;
+using Application.Extensions.Mappers;
 using Application.Extensions.Responses.PagedResponse;
 using Application.Extensions.ResultPattern;
+using Domain.Common;
+using Domain.Entities;
 
 namespace Infrastructure.ImplementationContract.Services;
 
 public class RoleService(IRoleRepository repository) : IRoleService
 {
-    public Task<BaseResult> CreateAsync(int sellerId, RoleCreateInfo createInfo)
+    public async Task<BaseResult> CreateAsync(RoleCreateInfo createInfo)
     {
-        throw new NotImplementedException();
+        var res = await repository
+            .Find(r => r.Name == createInfo.Name);
+
+        var exists = res.Value!.Any();
+
+
+        if (exists)
+            return BaseResult.Failure(Error.Conflict("Role already exists"));
+
+        Role role = createInfo.ToEntity();
+
+        var result = await repository.AddAsync(role);
+        
+        return result.IsSuccess
+            ? BaseResult.Success()
+            : BaseResult.Failure(result.Error);
     }
 
-    public Task<BaseResult> UpdateAsync(int roleId, RoleUpdateInfo updateInfo)
+    public async Task<BaseResult> UpdateAsync(int roleId, RoleUpdateInfo updateInfo)
     {
-        throw new NotImplementedException();
+        var roleResult = await repository.GetByIdAsync(roleId);
+        if (!roleResult.IsSuccess)
+            return BaseResult.Failure(roleResult.Error);
+
+        Role role = roleResult.Value!;
+        role.ToEntity(updateInfo);
+
+        var result = await repository.UpdateAsync(role);
+        return result.IsSuccess
+            ? BaseResult.Success()
+            : BaseResult.Failure(result.Error);
     }
 
-    public Task<BaseResult> DeleteAsync(int roleId)
+    public async Task<BaseResult> DeleteAsync(int roleId)
     {
-        throw new NotImplementedException();
+        var roleRes = await repository.GetByIdAsync(roleId);
+        if(!roleRes.IsSuccess)
+            return BaseResult.Failure(roleRes.Error);
+
+
+        var res = await repository.DeleteAsync(roleId);
+
+        return res.IsSuccess
+            ? BaseResult.Success()
+            : BaseResult.Failure(res.Error);
     }
 
-    public Task<Result<ProductReadInfo>> GetByIdAsync(int id)
+    public async Task<Result<RoleReadInfo>> GetByIdAsync(int id)
     {
-        throw new NotImplementedException();
+        var res = await repository.GetByIdAsync(id);
+        if (!res.IsSuccess)
+            return Result<RoleReadInfo>.Failure(res.Error);
+
+        return Result<RoleReadInfo>.Success(res.Value!.ToRead());
     }
 
-    public Task<Result<PagedResponse<RoleReadInfo>>> GetAllAsync()
+    public async Task<Result<PagedResponse<IEnumerable<RoleReadInfo>>>> GetAllAsync()
     {
-        throw new NotImplementedException();
+        var request = await repository.Find(_=>true);
+
+        if (!request.IsSuccess)
+            return Result<PagedResponse<IEnumerable<RoleReadInfo>>>.Failure(request.Error);
+
+        List<RoleReadInfo> roles = request.Value!
+            .Select(r => r.ToRead())
+            .ToList();
+
+        var response = PagedResponse<IEnumerable<RoleReadInfo>>
+            .Create(1, roles.Count, roles.Count, roles);
+
+        return Result<PagedResponse<IEnumerable<RoleReadInfo>>>.Success(response);
     }
 }

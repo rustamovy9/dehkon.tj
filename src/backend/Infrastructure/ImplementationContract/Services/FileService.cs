@@ -4,12 +4,22 @@ using Microsoft.AspNetCore.Http;
 
 namespace Infrastructure.ImplementationContract.Services;
 
-public class FileService(IWebHostEnvironment hostEnvironment) : IFileService
+public class FileService : IFileService
 {
     private const long MaxFileSize = 50 * 1024 * 1024;
+    private readonly string _rootPath;
 
     private readonly HashSet<string> _allowedExtensions = new(StringComparer.OrdinalIgnoreCase)
         { ".jpg", ".png",".jpeg",".mp4" };
+    
+    public FileService(IWebHostEnvironment env)
+    {
+        _rootPath = env.WebRootPath
+                    ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+
+        if (!Directory.Exists(_rootPath))
+            Directory.CreateDirectory(_rootPath);
+    }
 
     public async Task<string> CreateFile(IFormFile file, string folder)
     {
@@ -20,7 +30,7 @@ public class FileService(IWebHostEnvironment hostEnvironment) : IFileService
             throw new InvalidOperationException("File size exceeds the maximum allowed size.");
 
         string fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}"; 
-        string folderPath = Path.Combine(hostEnvironment.WebRootPath, folder); 
+        string folderPath = Path.Combine(_rootPath, folder); 
 
         if (!Directory.Exists(folderPath))
         {
@@ -45,27 +55,17 @@ public class FileService(IWebHostEnvironment hostEnvironment) : IFileService
         }
     }
 
-    public bool DeleteFile(string file, string folder)
+    public bool DeleteFile(string? file, string folder)
     {
-        string folderPath = Path.Combine(hostEnvironment.WebRootPath, folder);
-        string fullPath = Path.Combine(folderPath, file);
-
-        try
-        {
-            if (!Directory.Exists(folderPath)) return false;
-            
-            if (File.Exists(fullPath))
-            {
-                File.Delete(fullPath);
-                return true;
-            }
-
+        if (string.IsNullOrWhiteSpace(file))
             return false;
-        }
-        catch (Exception ex)
-        {
-            Console.Error.WriteLine(ex.Message);
-            throw new InvalidOperationException("An error occurred while delete the file.");
-        }
+
+        string fullPath = Path.Combine(_rootPath, folder, file);
+
+        if (!File.Exists(fullPath))
+            return false;
+
+        File.Delete(fullPath);
+        return true;
     }
 }

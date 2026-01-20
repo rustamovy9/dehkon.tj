@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using System.Collections;
+using System.Linq.Expressions;
 using Application.Contracts.IRepositories.IBaseRepository;
 using Application.Extensions.ResultPattern;
 using Domain.Common;
@@ -147,17 +148,18 @@ public class GenericRepository<T>(DataContext dbContext) : IGenericRepository<T>
         }
     }
 
-    public Result<IQueryable<T>> Find(Expression<Func<T, bool>> expression)
+    public async Task<Result<IEnumerable<T>>> Find(Expression<Func<T, bool>> expression)
     {
         try
         {
-            return Result<IQueryable<T>>
-                .Success(dbContext.Set<T>()
-                    .Where(expression).AsQueryable());
+           List<T> data =  await dbContext.Set<T>()
+                    .Where(expression).ToListAsync();
+
+           return Result<IEnumerable<T>>.Success(data);
         }
         catch (Exception e)
         {
-            return Result<IQueryable<T>>.Failure(Error.InternalServerError());
+            return Result<IEnumerable<T>>.Failure(Error.InternalServerError());
         }
     }
 }

@@ -18,7 +18,7 @@ public class AuthService(DataContext dbContext,IAuthenticationService service) :
     {
         User? user = await dbContext.Users
             .Include(u=>u.Role)
-            .FirstOrDefaultAsync(x => (x.Email == request.Email || x.UserName == request.Email)
+            .FirstOrDefaultAsync(x => (x.Email == request.Email || (x.UserName == request.Email))
                                        && x.PasswordHash == HashAlgorithms.ConvertToHash(request.Password));
 
         if (user is null)

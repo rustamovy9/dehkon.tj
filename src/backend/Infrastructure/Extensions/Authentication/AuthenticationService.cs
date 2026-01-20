@@ -14,7 +14,7 @@ public class AuthenticationService(IConfiguration config, DataContext dbContext)
 {
     public async Task<string> GenerateTokeAsync(User user)
     {
-        string key = config["JWT':key"]!;
+        string key = config["JWT:Key"]!;
 
         SigningCredentials credentials =
             new SigningCredentials(GetSymmetricSecurityKey(key),

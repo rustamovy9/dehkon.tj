@@ -31,9 +31,11 @@ public sealed record Error
 
     public static Error BadRequest(string? message = "Bad request!")
         => new(400, message, ErrorType.BadRequest);
-
+    public static Error Forbidden(string? message = "Forbidden!")
+        => new(403, message, ErrorType.Forbidden);
     public static Error AlreadyExist(string? message = "Already exist!")
         => new(409, message, ErrorType.AlreadyExist);
+
 
     public static Error Conflict(string? message = "Conflict!")
         => new(409, message, ErrorType.Conflict);

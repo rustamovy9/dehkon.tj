@@ -6,8 +6,8 @@ namespace Application.Contracts.IServices;
 public interface ICartService
 {
     Task<Result<CartReadInfo>> GetMyCartAsync(int userId);
-    Task<BaseResult> AddItemAsync(int userId,CartItemCreateInfo createInfo);
-    Task<BaseResult> UpdateItemAsync(int userId, CartItemUpdateInfo updateInfo);
-    Task<BaseResult> RemoveItemAsync(int userId, int productId);
+    Task<BaseResult> AddItemAsync(int userId, CartItemCreateInfo createInfo);
+    Task<BaseResult> UpdateItemAsync(int userId,int cartItemId, CartItemUpdateInfo updateInfo);
+    Task<BaseResult> RemoveItemAsync(int userId, int cartItemId);
     Task<BaseResult> ClearCartAsync(int userId);
 }

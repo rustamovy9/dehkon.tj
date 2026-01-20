@@ -39,17 +39,18 @@ public class GenericFindRepository<T>(DataContext dbContext) : IGenericFindRepos
         }
     }
 
-    public Result<IQueryable<T>> Find(Expression<Func<T, bool>> expression)
+    public async Task<Result<IEnumerable<T>>> Find(Expression<Func<T, bool>> expression)
     {
         try
         {
-            return Result<IQueryable<T>>
-                .Success(dbContext.Set<T>()
-                    .Where(expression).AsQueryable());
+            List<T> data = await dbContext.Set<T>()
+                    .Where(expression).ToListAsync();
+
+            return Result<IEnumerable<T>>.Success(data);
         }
         catch (Exception e)
         {
-            return Result<IQueryable<T>>.Failure(Error.InternalServerError(e.Message));
+            return Result<IEnumerable<T>>.Failure(Error.InternalServerError(e.Message));
         }
     }
 }

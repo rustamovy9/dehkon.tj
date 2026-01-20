@@ -28,10 +28,9 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(p => p.PhoneNumber)
             .IsRequired()
             .HasMaxLength(20);
-        
-        builder.HasIndex(p=>p.PhoneNumber)
-            .IsUnique()
-            .HasFilter("[PhoneNumber] IS NOT NULL");
+
+        builder.HasIndex(p => p.PhoneNumber)
+            .IsUnique();
         
         builder.Property(x => x.ProfilePhotoUrl)
             .HasMaxLength(500);

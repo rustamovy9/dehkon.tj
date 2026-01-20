@@ -16,4 +16,4 @@ public record ChatShortReadInfo(
 );
 
 public record PrivateChatCreateInfo(
-    int UserId);
+    int OtherUserId);

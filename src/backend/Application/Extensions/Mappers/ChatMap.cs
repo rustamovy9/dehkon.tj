@@ -9,7 +9,20 @@ public static class ChatMap
         => new(
             entity.Id,
             entity.IsGlobal,
-            entity.ChatUsers.Select(cu=>cu.ToRead()).ToList(),
-            entity.Messages.MaxBy(m=>m.CreatedAt)
+            entity.ChatUsers.Select(cu => cu.ToRead()).ToList(),
+            entity.Messages.MaxBy(m => m.CreatedAt)
                 ?.ToRead());
+
+    public static Chat ToPrivateChat(int userId, PrivateChatCreateInfo privateChatCreateInfo)
+    {
+        return new Chat
+        {
+            IsGlobal = false,
+            ChatUsers =
+            [
+                new ChatUser { UserId = userId },
+                new ChatUser { UserId = privateChatCreateInfo.OtherUserId }
+            ]
+        };
+    }
 }

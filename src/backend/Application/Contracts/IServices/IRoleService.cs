@@ -6,9 +6,9 @@ namespace Application.Contracts.IServices;
 
 public interface IRoleService
 {
-    Task<BaseResult> CreateAsync(int sellerId, RoleCreateInfo createInfo);
+    Task<BaseResult> CreateAsync(RoleCreateInfo createInfo);
     Task<BaseResult> UpdateAsync(int roleId, RoleUpdateInfo updateInfo);
     Task<BaseResult> DeleteAsync(int roleId);
-    Task<Result<ProductReadInfo>> GetByIdAsync(int id);
-    Task<Result<PagedResponse<RoleReadInfo>>> GetAllAsync();
+    Task<Result<RoleReadInfo>> GetByIdAsync(int id);
+    Task<Result<PagedResponse<IEnumerable<RoleReadInfo>>>> GetAllAsync();
 }

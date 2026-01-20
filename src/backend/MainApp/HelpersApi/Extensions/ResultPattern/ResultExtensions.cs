@@ -24,7 +24,7 @@ public static class ResultExtensions
         };
     }
     
-    public static IActionResult ToActionResult<T>(this BaseResult result)
+    public static IActionResult ToActionResult(this BaseResult result)
     {
         ApiResponse<BaseResult> apiResponse = result.IsSuccess
             ? ApiResponse<BaseResult>.Success(null)

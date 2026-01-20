@@ -20,5 +20,12 @@ public static class OrderMap
             order.Status,
             order.TotalPrice,
             order.CreatedAt,
-            order.OrderItems.Select(i=>i.ToRead()).ToList());
+            order.OrderItems.Select(i=>i.ToRead()).ToList()); 
+    
+    public static OrderShortReadInfo ToReadShort(this Order order)
+        => new(
+            order.Id,
+            order.Status,
+            order.TotalPrice,
+            order.CreatedAt);
 }
