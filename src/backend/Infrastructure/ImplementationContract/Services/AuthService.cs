@@ -59,13 +59,9 @@ public class AuthService(DataContext dbContext,IAuthenticationService service) :
         User user = request.ToEntity();
         user.RoleId = role.Id;
 
+        user.Cart = new Cart();
+        
         await dbContext.AddAsync(user);
-
-        Cart cart = new Cart
-        {
-            UserId = user.Id
-        };
-        await dbContext.AddAsync(cart);
         await dbContext.SaveChangesAsync();
 
         return BaseResult.Success();
