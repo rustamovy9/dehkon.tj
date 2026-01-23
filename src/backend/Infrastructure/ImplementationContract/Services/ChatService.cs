@@ -24,20 +24,24 @@ public class ChatService(IChatRepository chatRepository,IUserRepository userRepo
         if (!otherUser.IsSuccess)
             return Result<ChatReadInfo>.Failure(Error.NotFound("User not found"));
 
-        Chat? existingChat =
+        Result<Chat?> existingChat =
             await chatRepository.GetPrivateChatBetweenUsersAsync(
                 userId, createInfo.OtherUserId);
 
-        if (existingChat != null)
-            return Result<ChatReadInfo>.Success(existingChat.ToRead());
+        if (existingChat.Value != null)
+            return Result<ChatReadInfo>.Success(existingChat.Value.ToRead());
 
         Chat chat = ChatMap.ToPrivateChat(userId, createInfo);
 
         var result = await chatRepository.AddAsync(chat);
+        if (!result.IsSuccess)
+            return Result<ChatReadInfo>.Failure(result.Error);
 
+        var chatFromDb = await chatRepository.GetByIdWithUsersAsync(chat.Id);
+        
         return result.IsSuccess
-            ? Result<ChatReadInfo>.Success(chat.ToRead())
-            : Result<ChatReadInfo>.Failure(result.Error);
+            ? Result<ChatReadInfo>.Success(chatFromDb.Value!.ToRead())
+            : Result<ChatReadInfo>.Failure(chatFromDb.Error);
     }
 
     public async Task<Result<IEnumerable<ChatReadInfo>>> GetMyChatsAsync(int userId)
@@ -119,5 +123,15 @@ public class ChatService(IChatRepository chatRepository,IUserRepository userRepo
         return updateRes.IsSuccess
             ? BaseResult.Success()
             : BaseResult.Failure(updateRes.Error);
+    }
+
+    public async Task<Result<ChatReadInfo>> GetGlobalChatAsync()
+    {
+        var chatRes = await chatRepository.GetGlobalChatAsync();
+
+
+        return chatRes.IsSuccess
+            ? Result<ChatReadInfo>.Success(chatRes.Value!.ToRead())
+            : Result<ChatReadInfo>.Failure(chatRes.Error);
     }
 }

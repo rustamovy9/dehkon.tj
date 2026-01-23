@@ -9,4 +9,5 @@ public interface IUserRepository : IGenericUpdateRepository<User>,IGenericFindRe
 {
     Task<Result<User>> GetByIdWithRoleAsync(int id);
     Task<Result<IEnumerable<User>>> FindWithRole(Expression<Func<User, bool>> expression);
+    Task<bool> ExistsAsync(Expression<Func<User, bool>> expression);
 }

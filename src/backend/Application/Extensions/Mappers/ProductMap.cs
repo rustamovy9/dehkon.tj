@@ -49,7 +49,7 @@ public static class ProductMap
         entity.CategoryId = updateInfo.CategoryId;
         entity.SellerId = sellerId;
         entity.Version++;
-        entity.UpdatedAt = DateTimeOffset.Now;
+        entity.UpdatedAt = DateTimeOffset.UtcNow;
         return entity;
     }
 

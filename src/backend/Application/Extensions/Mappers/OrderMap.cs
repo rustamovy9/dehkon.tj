@@ -18,6 +18,7 @@ public static class OrderMap
             order.BuyerId,
             order.CourierId,
             order.Status,
+            order.DeliveryAddress,
             order.TotalPrice,
             order.CreatedAt,
             order.OrderItems.Select(i=>i.ToRead()).ToList()); 
@@ -26,6 +27,7 @@ public static class OrderMap
         => new(
             order.Id,
             order.Status,
+            order.DeliveryAddress,
             order.TotalPrice,
             order.CreatedAt);
 }

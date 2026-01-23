@@ -10,13 +10,15 @@ public record OrderDetailReadInfo(
     int BuyerId,
     int? CourierId,
     OrderStatus Status,
-    decimal TotalPrice, 
+    string DeliveryAddress,
+    decimal TotalPrice,
     DateTimeOffset CreatedAt,
     ICollection<OrderItemReadInfo> Items);
-    
+
 public record OrderShortReadInfo(
     int Id,
     OrderStatus Status,
+    string DeliveryAddress,
     decimal TotalPrice,
     DateTimeOffset CreatedAt
 );

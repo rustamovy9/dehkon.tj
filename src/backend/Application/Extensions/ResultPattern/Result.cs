@@ -13,5 +13,5 @@ public class Result<T> : BaseResult
     }
 
     public static Result<T> Success(T? value) => new(true, Error.None(), value);
-    public static Result<T> Failure(Error error) => new(false, error, default);
+    public new static Result<T> Failure(Error error) => new(false, error, default);
 }

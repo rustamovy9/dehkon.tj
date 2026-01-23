@@ -13,12 +13,12 @@ using Infrastructure.Extensions;
 
 namespace Infrastructure.ImplementationContract.Services;
 
-public class OrderService(IOrderRepository orderRepository,ICartRepository cartRepository,IProductRepository productRepository) : IOrderService
+public class OrderService(IOrderRepository orderRepository, ICartRepository cartRepository) : IOrderService
 {
     public async Task<BaseResult> CreateOrderAsync(int userId, OrderCreateInfo createInfo)
     {
         var cartRes = await cartRepository.GetByUserIdAsync(userId);
-        if(!cartRes.IsSuccess)
+        if (!cartRes.IsSuccess)
             return BaseResult.Failure(cartRes.Error);
 
         Cart cart = cartRes.Value!;
@@ -27,15 +27,13 @@ public class OrderService(IOrderRepository orderRepository,ICartRepository cartR
             return BaseResult.Failure(Error.BadRequest("Cart is empty"));
 
         Order order = createInfo.ToEntity(userId);
+        order.Status = OrderStatus.AwaitingPayment;
 
         decimal totalPrice = 0;
 
         foreach (var item in cart.CartItems)
         {
             Product product = item.Product;
-
-            if (product.StockPerKg < item.QuantityKg)
-                return BaseResult.Failure(Error.BadRequest($"Not enough stock for {product.Name}"));
 
             OrderItem orderItem = new OrderItem
             {
@@ -45,15 +43,13 @@ public class OrderService(IOrderRepository orderRepository,ICartRepository cartR
             };
 
             totalPrice += orderItem.TotalPrice;
-            product.StockPerKg -= item.QuantityKg;
-
             order.OrderItems.Add(orderItem);
         }
 
         order.TotalPrice = totalPrice;
 
         await orderRepository.AddAsync(order);
-        
+
         cart.CartItems.Clear();
 
         return BaseResult.Success();
@@ -67,7 +63,7 @@ public class OrderService(IOrderRepository orderRepository,ICartRepository cartR
             (orderFilter.CourierId == null || o.CourierId == orderFilter.CourierId) &&
             (orderFilter.DateFrom == null || o.CreatedAt >= orderFilter.DateFrom) &&
             (orderFilter.DateTo == null || o.CreatedAt <= orderFilter.DateTo) &&
-            (orderFilter.SellerId == null || 
+            (orderFilter.SellerId == null ||
              o.OrderItems.Any(i => i.Product.SellerId == orderFilter.SellerId));
 
         var request = await orderRepository.Find(filterExpression);
@@ -112,7 +108,7 @@ public class OrderService(IOrderRepository orderRepository,ICartRepository cartR
 
     public async Task<Result<OrderDetailReadInfo>> GetOrderByIdAsync(int id)
     {
-        var res = await orderRepository.GetByIdAsync(id);
+        var res = await orderRepository.GetByIdWithItemAsync(id);
         if (!res.IsSuccess)
             return Result<OrderDetailReadInfo>.Failure(res.Error);
 
@@ -122,10 +118,12 @@ public class OrderService(IOrderRepository orderRepository,ICartRepository cartR
     public async Task<BaseResult> ChangeStatusAsync(int orderId, OrderStatus status)
     {
         var res = await orderRepository.GetByIdAsync(orderId);
-        if(!res.IsSuccess)
+        if (!res.IsSuccess)
             return BaseResult.Failure(res.Error);
 
-        res.Value!.Status = status;
+        var order = res.Value!;
+        order.Status = status;
+        await orderRepository.UpdateAsync(order);
         return BaseResult.Success();
     }
 }

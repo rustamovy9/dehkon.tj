@@ -14,7 +14,7 @@ public class User : BaseEntity
     public int RoleId { get; set; }
     public Role Role { get; set; } = null!;
     public Cart Cart { get; set; } = null!;
-    public ICollection<Review> Reviews { get; set; }
-    public ICollection<Product> Products { get; set; }
-    public ICollection<Message> Messages { get; set; }
+    public ICollection<Review> Reviews { get; set; } = [];
+    public ICollection<Product> Products { get; set; } = [];
+    public ICollection<Message> Messages { get; set; } = [];
 }

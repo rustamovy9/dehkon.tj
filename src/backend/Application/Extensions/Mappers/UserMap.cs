@@ -20,13 +20,13 @@ public static class UserMap
     
     public static  async Task<User> ToEntity(this User entity, UserUpdateInfo updateInfo, IFileService fileService)
     {
-        if (updateInfo.ProfilePhotoUrl is not null)
+        if (updateInfo.ProfilePhotoUrl is not null && entity?.ProfilePhotoUrl is not null)
         {
             fileService.DeleteFile(entity.ProfilePhotoUrl, MediaFolders.Images);
 
             entity.ProfilePhotoUrl = await fileService.CreateFile(updateInfo.ProfilePhotoUrl, MediaFolders.Images);
         }
-        entity.UserName = updateInfo.UserName;
+        entity!.UserName = updateInfo.UserName;
         entity.FullName = updateInfo.FullName;
         entity.PhoneNumber = updateInfo.PhoneNumber!;
         entity.Version++;

@@ -19,7 +19,7 @@ public static class ReviewMap
         review.Rating = updateInfo.Rating;
         review.Comment = updateInfo.Comment;
         review.Version++;
-        review.UpdatedAt = DateTimeOffset.Now;
+        review.UpdatedAt = DateTimeOffset.UtcNow;
         return review;
     }
 

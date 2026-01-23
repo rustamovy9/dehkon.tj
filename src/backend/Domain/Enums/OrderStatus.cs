@@ -3,8 +3,11 @@
 public enum OrderStatus
 {
     Created = 1,
-    Confirm = 2,
-    InDelivery = 3,
-    Delivered = 4,
-    Canceled = 5
+    AwaitingPayment = 2,
+    Paid = 3,
+    AssignedCourier = 4,
+    OnTheWay = 5,
+    InDelivery =6,
+    Delivered = 7,
+    Canceled = 8
 }

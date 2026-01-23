@@ -9,8 +9,11 @@ public static class ChatMap
         => new(
             entity.Id,
             entity.IsGlobal,
-            entity.ChatUsers.Select(cu => cu.ToRead()).ToList(),
-            entity.Messages.MaxBy(m => m.CreatedAt)
+            entity.IsGlobal
+                ? []
+                : entity.ChatUsers?.Select(cu => cu.ToRead()).ToList()!,
+            entity.Messages?.OrderByDescending(m => m.CreatedAt)
+                .FirstOrDefault()
                 ?.ToRead());
 
     public static Chat ToPrivateChat(int userId, PrivateChatCreateInfo privateChatCreateInfo)

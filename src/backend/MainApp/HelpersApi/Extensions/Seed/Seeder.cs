@@ -12,6 +12,7 @@ public class Seeder(DataContext dbContext)
     {
         await InitRolesAsync();
         await InitUsersAsync();
+        await InitGlobalChatAsync();
     }
 
     private async Task InitRolesAsync()
@@ -57,6 +58,25 @@ public class Seeder(DataContext dbContext)
 
         await dbContext.SaveChangesAsync();
     }
+
+    private async Task InitGlobalChatAsync()
+    {
+        bool exist = await dbContext.Chats
+            .IgnoreQueryFilters()
+            .AnyAsync(c => c.IsGlobal);
+        
+        if(exist)
+            return;
+
+        Chat globalChat = new Chat()
+        {
+            IsGlobal = true,
+            IsActive = true,
+        };
+
+        await dbContext.Chats.AddAsync(globalChat);
+        await dbContext.SaveChangesAsync();
+    }
 }
 
 
@@ -67,21 +87,25 @@ file static class SeedData
     [
         new Role
         {
+            Id = 1,
             Name = DefaultRoles.Admin,
             Description = "System administrator"
         },
         new Role
         {
+            Id = 2,
             Name = DefaultRoles.User,
             Description = "Default user"
         },
         new Role
         {
+            Id = 3,
             Name = DefaultRoles.Seller,
             Description = "Product seller"
         },
         new Role
         {
+            Id = 4,
             Name = DefaultRoles.Courier,
             Description = "Delivery courier"
         }
@@ -91,6 +115,7 @@ file static class SeedData
     [
         new User
         {
+            Id = 1,
             UserName = "admin",
             FullName = "Admin Adminov",
             Email = "admin@gmail.com",
@@ -100,6 +125,7 @@ file static class SeedData
         },
         new User
         {
+            Id = 2,
             UserName = "user",
             FullName = "User Userov",
             Email = "user@gmail.com",
@@ -108,4 +134,6 @@ file static class SeedData
             RoleId = 2
         }
     ];
+    
+    
 }

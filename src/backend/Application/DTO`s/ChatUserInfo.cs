@@ -2,6 +2,7 @@
 
 public record ChatUserReadInfo(
     int UserId,
-    string UserName);
+    string UserName,
+    string PhotoProfileUrl);
     
     

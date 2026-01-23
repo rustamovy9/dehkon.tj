@@ -12,4 +12,5 @@ public interface IChatService
     Task<Result<PagedResponse<IEnumerable<ChatReadInfo>>>> GetAllAsync(ChatFilter filter);
     Task<Result<ChatReadInfo>> GetChatByIdAsync(int chatId, int userId);
     Task<BaseResult> DeleteAsync(int chatId, int userId);
+    Task<Result<ChatReadInfo>> GetGlobalChatAsync();
 }

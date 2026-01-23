@@ -26,7 +26,7 @@ public class CategoryService(ICategoryRepository repository) : ICategoryService
     public async Task<Result<PagedResponse<IEnumerable<CategoryReadInfo>>>> GetAllAsync(CategoryFilter filter)
     {
         Expression<Func<Category, bool>> filterExpression = c =>
-            (string.IsNullOrEmpty(filter.Name) || c.Name == filter.Name);
+            (string.IsNullOrEmpty(filter.Name) || c.Name.ToLower().Contains(filter.Name));
 
         var req = await repository.Find(filterExpression);
 
@@ -49,8 +49,6 @@ public class CategoryService(ICategoryRepository repository) : ICategoryService
 
     public async Task<BaseResult> CreateAsync(CategoryCreateInfo createInfo)
     {
- 
-
         var findResult = await repository.Find(c => c.Name == createInfo.Name);
         if (!findResult.IsSuccess)
             return BaseResult.Failure(findResult.Error);

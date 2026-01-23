@@ -25,7 +25,7 @@ public static class AnnouncementMap
         entity.Title = updateInfo.Title;
         entity.Content = updateInfo.Content;
         entity.Version++;
-        entity.UpdatedAt = DateTimeOffset.Now;
+        entity.UpdatedAt = DateTimeOffset.UtcNow;
         return entity;
     }
 

@@ -12,7 +12,7 @@ public static class CategoryMap
     {
         entity.Name = updateInfo.Name;
         entity.Version++;
-        entity.UpdatedAt = DateTimeOffset.Now;
+        entity.UpdatedAt = DateTimeOffset.UtcNow;
         return entity;
     }
 

@@ -12,7 +12,7 @@ using Infrastructure.Extensions;
 
 namespace Infrastructure.ImplementationContract.Services;
 
-public class UserService(IUserRepository userRepository,IFileService fileService) : IUserService
+public class UserService(IUserRepository userRepository, IFileService fileService) : IUserService
 {
     public async Task<Result<UserReadInfo>> GetMyProfileAsync(int userId)
     {
@@ -29,22 +29,24 @@ public class UserService(IUserRepository userRepository,IFileService fileService
         if (!userRes.IsSuccess)
             return BaseResult.Failure(userRes.Error);
 
-        bool conflict = (await userRepository.GetAllAsync()).Value!.Any(user =>
-            user.UserName.ToLower().Contains(entity.UserName.ToLower())
-            || user.PhoneNumber!.ToLower().Contains(entity.PhoneNumber!));
+        bool conflict = await userRepository.ExistsAsync(u =>
+            u.Id != userId &&
+            (
+                u.UserName.ToLower() == entity.UserName.ToLower()
+                || (u.PhoneNumber != null && u.PhoneNumber == entity.PhoneNumber)
+            )
+        );
 
         if (conflict) return BaseResult.Failure(Error.Conflict("username or phone already exist"));
-        
+
         User user = userRes.Value!;
 
-        await user.ToEntity(entity, fileService);
+        user = await user.ToEntity(entity, fileService);
         var res = await userRepository.UpdateAsync(user);
 
         return res.IsSuccess
             ? BaseResult.Success()
             : BaseResult.Failure(res.Error);
-
-
     }
 
     public async Task<Result<UserReadInfo>> GetUserByIdAsync(int id)
@@ -60,9 +62,9 @@ public class UserService(IUserRepository userRepository,IFileService fileService
     {
         Expression<Func<User, bool>> filterExpression = u =>
             (filter.RoleId == null || u.RoleId == filter.RoleId) &&
-            (string.IsNullOrEmpty(filter.UserName) || u.UserName == filter.UserName) &&
-            (string.IsNullOrEmpty(filter.Email) || u.Email == filter.Email) &&
-            (string.IsNullOrEmpty(filter.FullName) || u.FullName == filter.FullName) &&
+            (string.IsNullOrEmpty(filter.UserName) || u.UserName.ToLower().Contains(filter.UserName) &&
+                (string.IsNullOrEmpty(filter.Email) || u.Email.ToLower().Contains(filter.Email))) &&
+            (string.IsNullOrEmpty(filter.FullName) || u.FullName.ToLower().Contains(filter.FullName)) &&
             (filter.IsActive == null || u.IsDeleted != filter.IsActive);
 
         var request = await userRepository.FindWithRole(filterExpression);

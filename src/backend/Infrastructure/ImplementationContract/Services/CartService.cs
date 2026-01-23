@@ -8,7 +8,10 @@ using Domain.Entities;
 
 namespace Infrastructure.ImplementationContract.Services;
 
-public class CartService(ICartRepository cartRepository,ICartItemRepository cartItemRepository,IProductRepository productRepository) : ICartService
+public class CartService(
+    ICartRepository cartRepository,
+    ICartItemRepository cartItemRepository,
+    IProductRepository productRepository) : ICartService
 {
     public async Task<Result<CartReadInfo>> GetMyCartAsync(int userId)
     {
@@ -28,31 +31,41 @@ public class CartService(ICartRepository cartRepository,ICartItemRepository cart
             return BaseResult.Failure(cartRes.Error);
 
         var productRes = await productRepository.GetByIdAsync(createInfo.ProductId);
-        if(!productRes.IsSuccess)
+        if (!productRes.IsSuccess)
             return BaseResult.Failure(productRes.Error);
 
         Cart cart = cartRes.Value!;
         Product product = productRes.Value!;
-        
-        if(product.StockPerKg < createInfo.QuantityKg)
-            return BaseResult.Failure(Error.BadRequest("Not enough product in stock"));
+
 
         CartItem? existingCartItem = cart.CartItems
-            .FirstOrDefault(ci=>ci.ProductId == createInfo.ProductId);
+            .FirstOrDefault(ci => ci.ProductId == createInfo.ProductId);
+
+        decimal totalRequestedKg = createInfo.QuantityKg;
+
+        if (existingCartItem != null)
+        {
+            totalRequestedKg += existingCartItem.QuantityKg;
+        }
+
+        if (product.StockPerKg < totalRequestedKg)
+            return BaseResult.Failure(Error.BadRequest("Not enough product in stock"));
 
         if (existingCartItem != null)
         {
             existingCartItem.QuantityKg += createInfo.QuantityKg;
+
+            await cartItemRepository.UpdateAsync(existingCartItem);
             return BaseResult.Success();
         }
 
-        CartItem newItem = createInfo.ToEntity(cart.Id,product.PricePerKg);
+        CartItem newItem = createInfo.ToEntity(cart.Id, product.PricePerKg);
 
         await cartItemRepository.AddAsync(newItem);
         return BaseResult.Success();
     }
 
-    public async Task<BaseResult> UpdateItemAsync(int userId,int cartItemId, CartItemUpdateInfo updateInfo)
+    public async Task<BaseResult> UpdateItemAsync(int userId, int cartItemId, CartItemUpdateInfo updateInfo)
     {
         var cartRes = await cartRepository.GetByUserIdAsync(userId);
         if (!cartRes.IsSuccess)
@@ -60,15 +73,15 @@ public class CartService(ICartRepository cartRepository,ICartItemRepository cart
 
         CartItem? item = cartRes.Value!.CartItems
             .FirstOrDefault(ci => ci.Id == cartItemId);
-        
-        if(item is null)
+
+        if (item is null)
             return BaseResult.Failure(Error.NotFound());
 
         var productRes = await productRepository.GetByIdAsync(item.ProductId);
-        if(!productRes.IsSuccess)
+        if (!productRes.IsSuccess)
             return BaseResult.Failure(productRes.Error);
-        
-        if(productRes.Value!.StockPerKg < updateInfo.QuantityKg)
+
+        if (productRes.Value!.StockPerKg < updateInfo.QuantityKg)
             return BaseResult.Failure(Error.BadRequest("Not enough product in stock"));
 
         item.QuantityKg = updateInfo.QuantityKg;
@@ -78,7 +91,7 @@ public class CartService(ICartRepository cartRepository,ICartItemRepository cart
     public async Task<BaseResult> RemoveItemAsync(int userId, int cartItemId)
     {
         var cartRes = await cartRepository.GetByUserIdAsync(userId);
-        if(!cartRes.IsSuccess)
+        if (!cartRes.IsSuccess)
             return BaseResult.Failure(cartRes.Error);
 
         CartItem? item = cartRes.Value!.CartItems
@@ -99,7 +112,7 @@ public class CartService(ICartRepository cartRepository,ICartItemRepository cart
 
         foreach (var item in cartRes.Value!.CartItems)
             await cartItemRepository.DeleteAsync(item);
-        
+
         return BaseResult.Success();
     }
 }

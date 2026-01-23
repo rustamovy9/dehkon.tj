@@ -15,7 +15,7 @@ public class GenericDeleteRepository<T>(DataContext dbContext) : IGenericDeleteR
     {
         try
         {
-            T? entity = await dbContext.Set<T>().FirstOrDefaultAsync(i => i.Id == id);
+            T? entity = await dbContext.Set<T>().AsTracking().FirstOrDefaultAsync(i => i.Id == id);
             if (entity == null)
                 return Result<int>.Failure(Error.NotFound());
 
@@ -36,7 +36,7 @@ public class GenericDeleteRepository<T>(DataContext dbContext) : IGenericDeleteR
     {
         try
         {
-            T? entity = await dbContext.Set<T>().FirstOrDefaultAsync(x=>x.Id==value.Id);
+            T? entity = await dbContext.Set<T>().AsTracking().FirstOrDefaultAsync(x=>x.Id==value.Id);
             if (entity == null)
                 return Result<int>.Failure(Error.NotFound());
 

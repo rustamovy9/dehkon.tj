@@ -49,7 +49,7 @@ public class GenericRepository<T>(DataContext dbContext) : IGenericRepository<T>
     {
         try
         {
-            T? existing = await dbContext.Set<T>().FirstOrDefaultAsync(x => x.Id == value.Id);
+            T? existing = await dbContext.Set<T>().AsTracking().FirstOrDefaultAsync(x => x.Id == value.Id && !x.IsDeleted);
             if (existing == null)
                 return Result<int>.Failure(Error.NotFound());
             
@@ -73,7 +73,7 @@ public class GenericRepository<T>(DataContext dbContext) : IGenericRepository<T>
     {
         try
         {
-            T? entity = await dbContext.Set<T>().FirstOrDefaultAsync(x => x.Id == id);
+            T? entity = await dbContext.Set<T>().AsTracking().FirstOrDefaultAsync(x => x.Id == id);
             if (entity == null)
                 return Result<int>.Failure(Error.NotFound());
 
@@ -97,7 +97,7 @@ public class GenericRepository<T>(DataContext dbContext) : IGenericRepository<T>
     {
         try
         {
-            T? entity = await dbContext.Set<T>().FirstOrDefaultAsync(x => x.Id == value.Id);
+            T? entity = await dbContext.Set<T>().AsTracking().FirstOrDefaultAsync(x => x.Id == value.Id);
             if (entity == null) 
                 return Result<int>.Failure(Error.NotFound());
 
@@ -144,7 +144,7 @@ public class GenericRepository<T>(DataContext dbContext) : IGenericRepository<T>
         }
         catch (Exception e)
         {
-            return Result<IEnumerable<T>>.Failure(Error.InternalServerError());
+            return Result<IEnumerable<T>>.Failure(Error.InternalServerError(e.Message));
         }
     }
 
@@ -159,7 +159,7 @@ public class GenericRepository<T>(DataContext dbContext) : IGenericRepository<T>
         }
         catch (Exception e)
         {
-            return Result<IEnumerable<T>>.Failure(Error.InternalServerError());
+            return Result<IEnumerable<T>>.Failure(Error.InternalServerError(e.Message));
         }
     }
 }

@@ -20,7 +20,7 @@ public sealed class ProductController(IProductService service) : BaseController
     public async Task<IActionResult> GetAll([FromQuery] ProductFilter filter)
         => (await service.GetAllAsync(filter)).ToActionResult();
 
-    [HttpGet("{id;int}")]
+    [HttpGet("{id:int}")]
     public async Task<IActionResult> GetById(int id)
         => (await service.GetByIdAsync(id)).ToActionResult();
 

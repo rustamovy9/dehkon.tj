@@ -39,7 +39,7 @@ public sealed class OrderController(IOrderService service) : BaseController
 
     [Authorize(Roles = DefaultRoles.Admin)]
     [HttpGet]
-    public async Task<IActionResult> GetOrders(OrderFilter filter)
+    public async Task<IActionResult> GetOrders([FromQuery]OrderFilter filter)
         => (await service.GetOrdersAsync(filter)).ToActionResult();
 
 }

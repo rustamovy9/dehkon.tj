@@ -39,14 +39,19 @@ public class UserRepository(DataContext dbContext)
         try
         {
             List<User> data = await _dbContext.Set<User>()
-                .Include(u=>u.Role)
+                .Include(u => u.Role)
                 .Where(expression).ToListAsync();
 
             return Result<IEnumerable<User>>.Success(data);
         }
         catch (Exception e)
         {
-            return Result<IEnumerable<User>>.Failure(Error.InternalServerError());
+            return Result<IEnumerable<User>>.Failure(Error.InternalServerError(e.Message));
         }
+    }
+
+    public async Task<bool> ExistsAsync(Expression<Func<User, bool>> expression)
+    {
+        return await _dbContext.Users.AnyAsync(expression);
     }
 }

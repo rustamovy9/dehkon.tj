@@ -22,13 +22,13 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
             .HasMaxLength(500);
 
         //Buyer(User)
-        builder.HasOne<User>()
+        builder.HasOne(o=>o.Buyer)
             .WithMany()
             .HasForeignKey(x=>x.BuyerId)
             .OnDelete(DeleteBehavior.Restrict);
         
         //Courier(User)
-        builder.HasOne<User>()
+        builder.HasOne(o=>o.Courier)
             .WithMany()
             .HasForeignKey(x=>x.CourierId)
             .OnDelete(DeleteBehavior.Restrict)

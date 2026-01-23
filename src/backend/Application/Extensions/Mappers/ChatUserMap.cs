@@ -8,5 +8,6 @@ public static class ChatUserMap
     public static ChatUserReadInfo ToRead(this ChatUser entity)
         => new(
             entity.UserId,
-            entity.User!.UserName);
+            entity.User!.UserName,
+            entity.User.ProfilePhotoUrl);
 }

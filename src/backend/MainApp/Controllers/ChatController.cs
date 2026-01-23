@@ -41,5 +41,8 @@ public sealed class ChatController(IChatService service) : BaseController
     public async Task<IActionResult> Delete(int id)
         => (await service.DeleteAsync(id,UserId)).ToActionResult();
 
+    [HttpGet("global")]
+    public async Task<IActionResult> GetGlobalChat()
+        => (await service.GetGlobalChatAsync()).ToActionResult();
 
 }

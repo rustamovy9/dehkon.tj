@@ -137,7 +137,7 @@ public static class RegisterService
         builder.Services.AddScoped<IAnnouncementService, AnnouncementService>();
         builder.Services.AddScoped<ICartService, CartService>();
         builder.Services.AddScoped<IChatService, ChatService>();
-        builder.Services.AddScoped<IUserService, UserService>();
+        builder.Services.AddScoped<ICourierService, CourierService>();
         builder.Services.AddScoped<ICategoryService, CategoryService>();
         builder.Services.AddScoped<IRoleService, RoleService>();
         builder.Services.AddScoped<IFileService, FileService>();
@@ -145,7 +145,9 @@ public static class RegisterService
         builder.Services.AddScoped<IMessageService, MessageService>();
         builder.Services.AddScoped<IOrderService, OrderService>();
         builder.Services.AddScoped<IProductService, ProductService>();
+        builder.Services.AddScoped<IPaymentService, PaymentService>();
         builder.Services.AddScoped<IReviewService, ReviewService>();
+        builder.Services.AddScoped<IUserService, UserService>();
 
         //registration validation
         builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
@@ -161,7 +163,7 @@ public static class RegisterService
 
         return builder.Services;
     }
-    
+
     public static async Task<WebApplication> UseMiddlewares(this WebApplication app)
     {
         using (IServiceScope scope = app.Services.CreateScope())
