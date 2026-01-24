@@ -8,11 +8,11 @@ using Domain.Entities;
 
 namespace Infrastructure.ImplementationContract.Services;
 
-public class MessageService(IMessageRepository messageRepository,IChatRepository chatRepository) : IMessageService
+public class MessageService(IMessageRepository messageRepository, IChatRepository chatRepository) : IMessageService
 {
     public async Task<BaseResult> SendMessageAsync(int userId, MessageCreateInfo createInfo)
     {
-        var chatRes = await chatRepository.GetByIdAsync(createInfo.ChatId);
+        var chatRes = await chatRepository.GetByIdWithUsersAsync(createInfo.ChatId);
         if (!chatRes.IsSuccess)
             return BaseResult.Failure(chatRes.Error);
 
@@ -34,7 +34,7 @@ public class MessageService(IMessageRepository messageRepository,IChatRepository
 
     public async Task<Result<IEnumerable<MessageReadInfo>>> GetMessagesAsync(int chatId, int userId)
     {
-        var chatRes = await chatRepository.GetByIdAsync(chatId);
+        var chatRes = await chatRepository.GetByIdWithUsersAsync(chatId);
         if (!chatRes.IsSuccess)
             return Result<IEnumerable<MessageReadInfo>>.Failure(chatRes.Error);
 
@@ -46,7 +46,7 @@ public class MessageService(IMessageRepository messageRepository,IChatRepository
         if (!isParticipant)
             return Result<IEnumerable<MessageReadInfo>>.Failure(Error.Forbidden());
 
-        var request = await messageRepository.Find(m => m.ChatId == chatId);
+        var request = await messageRepository.GetByChatIdAsync(chatId);
 
         if (!request.IsSuccess)
             return Result<IEnumerable<MessageReadInfo>>.Failure(request.Error);
@@ -60,7 +60,7 @@ public class MessageService(IMessageRepository messageRepository,IChatRepository
 
     public async Task<BaseResult> MarkAsReadAsync(int chatId, int userId)
     {
-        var chatRes = await chatRepository.GetByIdAsync(chatId);
+        var chatRes = await chatRepository.GetByIdWithUsersAsync(chatId);
         if (!chatRes.IsSuccess)
             return BaseResult.Failure(chatRes.Error);
 
@@ -68,21 +68,22 @@ public class MessageService(IMessageRepository messageRepository,IChatRepository
 
         bool isParticipant = chat.IsGlobal ||
                              chat.ChatUsers.Any(cu => cu.UserId == userId);
-        
-        if(!isParticipant)
+
+        if (!isParticipant)
             return BaseResult.Failure(Error.Forbidden());
 
-        var request = await messageRepository.Find(
-            m => m.ChatId == chatId &&
-                 m.SenderId != userId &&
-                 !m.IsRead);
+        var request = await messageRepository.FindUnreadForUser(chatId, userId);
 
         if (!request.IsSuccess)
             return BaseResult.Failure(request.Error);
 
         foreach (var message in request.Value!)
+        {
             message.IsRead = true;
-        
+            await messageRepository.UpdateAsync(message);
+        }
+
+
         return BaseResult.Success();
     }
 }

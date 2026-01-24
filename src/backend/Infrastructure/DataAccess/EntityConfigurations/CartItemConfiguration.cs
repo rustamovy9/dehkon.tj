@@ -30,5 +30,6 @@ public class CartItemConfiguration : IEntityTypeConfiguration<CartItem>
 
         builder.HasIndex(x => new { x.CartId, x.ProductId })
             .IsUnique();
+        
     }
 }

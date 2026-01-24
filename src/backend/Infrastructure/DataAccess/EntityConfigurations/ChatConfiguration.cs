@@ -24,5 +24,7 @@ public class ChatConfiguration : IEntityTypeConfiguration<Chat>
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasIndex(x => x.IsGlobal);
+        
+        builder.HasQueryFilter(c => !c.IsDeleted);
     }
 }

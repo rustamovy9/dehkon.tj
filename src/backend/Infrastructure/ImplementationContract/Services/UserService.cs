@@ -33,7 +33,7 @@ public class UserService(IUserRepository userRepository, IFileService fileServic
             u.Id != userId &&
             (
                 u.UserName.ToLower() == entity.UserName.ToLower()
-                || (u.PhoneNumber != null && u.PhoneNumber == entity.PhoneNumber)
+                || (entity.PhoneNumber != null && u.PhoneNumber == entity.PhoneNumber)
             )
         );
 

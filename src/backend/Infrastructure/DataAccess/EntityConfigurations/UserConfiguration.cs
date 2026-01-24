@@ -43,6 +43,8 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(x => x.PasswordHash)
             .IsRequired()
             .HasMaxLength(255);
+        
+        builder.HasQueryFilter(c => !c.IsDeleted);
 
     }
 }

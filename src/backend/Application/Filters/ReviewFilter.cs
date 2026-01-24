@@ -4,4 +4,4 @@ namespace Application.Filters;
 
 public record ReviewFilter(
     int? ProductId,
-    int? Rating) : BaseFilter;
+    int? MinRating) : BaseFilter;

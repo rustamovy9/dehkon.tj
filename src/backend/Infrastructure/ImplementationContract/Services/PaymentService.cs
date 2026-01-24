@@ -7,7 +7,7 @@ using Domain.Enums;
 
 namespace Infrastructure.ImplementationContract.Services;
 
-public class PaymentService(IOrderRepository orderRepository,IProductRepository productRepository) : IPaymentService
+public class PaymentService(IOrderRepository orderRepository,IProductRepository productRepository,ICartService cartService) : IPaymentService
 {
     public async Task<BaseResult> PayOrderAsync(int userId, int orderId)
     {
@@ -42,6 +42,8 @@ public class PaymentService(IOrderRepository orderRepository,IProductRepository 
         order.Version++;
 
         await orderRepository.UpdateAsync(order);
+        
+        await cartService.ClearCartAsync(userId);
         
         return BaseResult.Success();
     }

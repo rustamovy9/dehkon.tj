@@ -49,7 +49,7 @@ public class CategoryService(ICategoryRepository repository) : ICategoryService
 
     public async Task<BaseResult> CreateAsync(CategoryCreateInfo createInfo)
     {
-        var findResult = await repository.Find(c => c.Name == createInfo.Name);
+        var findResult = await repository.Find(c =>c.Name == createInfo.Name);
         if (!findResult.IsSuccess)
             return BaseResult.Failure(findResult.Error);
 

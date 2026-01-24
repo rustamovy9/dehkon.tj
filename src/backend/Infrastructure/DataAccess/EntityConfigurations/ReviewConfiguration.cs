@@ -25,7 +25,9 @@ public class ReviewConfiguration : IEntityTypeConfiguration<Review>
 
         builder.Property(r=>r.Rating)
             .IsRequired();
-
+        
+        builder.HasQueryFilter(c => !c.IsDeleted);
+        
         builder.HasIndex(r=> new {r.UserId,r.ProductId})
             .IsUnique();
     }

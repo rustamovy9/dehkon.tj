@@ -60,7 +60,7 @@ public class ReviewService(IReviewRepository repository,IOrderRepository orderRe
 
     public async Task<Result<IEnumerable<ReviewReadInfo>>> GetByProductAsync(int productId)
     {
-        var request = await repository.Find(r => r.ProductId == productId);
+        var request = await repository.FindWithUserAsync(r => r.ProductId == productId);
 
         if (!request.IsSuccess)
             return Result<IEnumerable<ReviewReadInfo>>.Failure(request.Error);
@@ -72,9 +72,9 @@ public class ReviewService(IReviewRepository repository,IOrderRepository orderRe
     {
         Expression<Func<Review, bool>> filterExpression = r =>
             (filter.ProductId == null || r.ProductId == filter.ProductId) &&
-            (filter.Rating == null || r.Rating == filter.Rating);
+            (filter.MinRating == null || r.Rating >= filter.MinRating);
 
-        var request = await repository.Find(filterExpression);
+        var request = await repository.FindWithUserAsync(filterExpression);
 
         if (!request.IsSuccess)
             return Result<PagedResponse<IEnumerable<ReviewReadInfo>>>.Failure(request.Error);

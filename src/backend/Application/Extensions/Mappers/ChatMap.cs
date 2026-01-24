@@ -13,8 +13,7 @@ public static class ChatMap
                 ? []
                 : entity.ChatUsers?.Select(cu => cu.ToRead()).ToList()!,
             entity.Messages?.OrderByDescending(m => m.CreatedAt)
-                .FirstOrDefault()
-                ?.ToRead());
+                .Select(m=>m.ToRead()!));
 
     public static Chat ToPrivateChat(int userId, PrivateChatCreateInfo privateChatCreateInfo)
     {

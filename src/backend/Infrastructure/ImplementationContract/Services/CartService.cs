@@ -85,6 +85,8 @@ public class CartService(
             return BaseResult.Failure(Error.BadRequest("Not enough product in stock"));
 
         item.QuantityKg = updateInfo.QuantityKg;
+        item.ProductId = updateInfo.ProductId;
+        await cartItemRepository.UpdateAsync(item);
         return BaseResult.Success();
     }
 

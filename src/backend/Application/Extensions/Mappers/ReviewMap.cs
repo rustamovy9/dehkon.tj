@@ -27,6 +27,7 @@ public static class ReviewMap
         => new(
             entity.Id,
             entity.ProductId,
+            entity.Product.Name,
             entity.UserId,
             entity.User.UserName,
             entity.Rating,

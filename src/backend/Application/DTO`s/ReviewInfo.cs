@@ -4,6 +4,7 @@
 public record ReviewReadInfo(
     int Id,
     int ProductId,
+    string ProductName,
     int UserId,
     string UserName,
     int Rating,

@@ -19,5 +19,7 @@ public class RoleConfiguration : IEntityTypeConfiguration<Role>
 
         builder.Property(d => d.Description)
             .HasMaxLength(200);
+        
+        builder.HasQueryFilter(c => !c.IsDeleted);
     }
 }

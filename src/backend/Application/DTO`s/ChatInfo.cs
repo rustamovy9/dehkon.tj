@@ -6,7 +6,7 @@ public record ChatReadInfo(
     int Id,
     bool IsGlobal,
     IReadOnlyCollection<ChatUserReadInfo> Participants,
-    MessageReadInfo? Message);
+    IEnumerable<MessageReadInfo>? Message);
     
 public record ChatShortReadInfo(
     int Id,

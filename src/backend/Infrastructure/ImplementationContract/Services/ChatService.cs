@@ -12,7 +12,7 @@ using Infrastructure.Extensions;
 
 namespace Infrastructure.ImplementationContract.Services;
 
-public class ChatService(IChatRepository chatRepository,IUserRepository userRepository) : IChatService
+public class ChatService(IChatRepository chatRepository, IUserRepository userRepository) : IChatService
 {
     public async Task<Result<ChatReadInfo>> CreatePrivateChatAsync(int userId, PrivateChatCreateInfo createInfo)
     {
@@ -38,7 +38,7 @@ public class ChatService(IChatRepository chatRepository,IUserRepository userRepo
             return Result<ChatReadInfo>.Failure(result.Error);
 
         var chatFromDb = await chatRepository.GetByIdWithUsersAsync(chat.Id);
-        
+
         return result.IsSuccess
             ? Result<ChatReadInfo>.Success(chatFromDb.Value!.ToRead())
             : Result<ChatReadInfo>.Failure(chatFromDb.Error);
@@ -46,13 +46,13 @@ public class ChatService(IChatRepository chatRepository,IUserRepository userRepo
 
     public async Task<Result<IEnumerable<ChatReadInfo>>> GetMyChatsAsync(int userId)
     {
-        Result<IEnumerable<Chat>> res = await chatRepository.Find(c => c.ChatUsers.Any(cu => cu.UserId == userId));
+        Result<IEnumerable<Chat>> res =
+            await chatRepository.FindWithDetailsAsync(c => c.ChatUsers.Any(cu => cu.UserId == userId));
 
         if (!res.IsSuccess)
             return Result<IEnumerable<ChatReadInfo>>.Failure(res.Error);
-      
-        return  Result<IEnumerable<ChatReadInfo>>.Success(res.Value!.Select(c => c.ToRead()).ToList());
-         
+
+        return Result<IEnumerable<ChatReadInfo>>.Success(res.Value!.Select(c => c.ToRead()).ToList());
     }
 
     public async Task<Result<PagedResponse<IEnumerable<ChatReadInfo>>>> GetAllAsync(ChatFilter filter)
@@ -61,14 +61,14 @@ public class ChatService(IChatRepository chatRepository,IUserRepository userRepo
             (filter.IsGlobal == null || ch.IsGlobal == filter.IsGlobal) &&
             (filter.UserId == null || ch.ChatUsers.Any(cu => cu.UserId == filter.UserId));
 
-        var req = await chatRepository.Find(filterExpression);
+        var req = await chatRepository.FindWithDetailsAsync(filterExpression);
 
         if (!req.IsSuccess)
             return Result<PagedResponse<IEnumerable<ChatReadInfo>>>.Failure(req.Error);
 
         List<ChatReadInfo> query = req.Value!
-            .OrderByDescending(c=>c.CreatedAt)
-            .Select(c=>c.ToRead())
+            .OrderByDescending(c => c.CreatedAt)
+            .Select(c => c.ToRead())
             .ToList();
 
         int count = query.Count;
@@ -76,14 +76,14 @@ public class ChatService(IChatRepository chatRepository,IUserRepository userRepo
         IEnumerable<ChatReadInfo> chats = query.Page(filter.PageNumber, filter.PageSize);
 
         var response = PagedResponse<IEnumerable<ChatReadInfo>>
-            .Create(filter.PageNumber,filter.PageSize,count,chats);
+            .Create(filter.PageNumber, filter.PageSize, count, chats);
 
         return Result<PagedResponse<IEnumerable<ChatReadInfo>>>.Success(response);
     }
 
     public async Task<Result<ChatReadInfo>> GetChatByIdAsync(int chatId, int userId)
     {
-        Result<Chat> chatRes = await chatRepository.GetByIdAsync(chatId);
+        Result<Chat> chatRes = await chatRepository.GetByIdWithUsersAsync(chatId);
         if (!chatRes.IsSuccess)
             return Result<ChatReadInfo>.Failure(chatRes.Error);
 
@@ -98,31 +98,28 @@ public class ChatService(IChatRepository chatRepository,IUserRepository userRepo
 
     public async Task<BaseResult> DeleteAsync(int chatId, int userId)
     {
-        Result<Chat> chatRes = await chatRepository.GetByIdAsync(chatId);
-        if(!chatRes.IsSuccess)
+        var chatRes = await chatRepository.GetByIdWithUsersAsync(chatId);
+        if (!chatRes.IsSuccess)
             return BaseResult.Failure(chatRes.Error);
 
         Chat chat = chatRes.Value!;
 
-        ChatUser? chatUser = chat.ChatUsers.FirstOrDefault(cu => cu.UserId == userId);
-        
-        if(chatUser is null)
+        bool isParticipant = chat.ChatUsers.Any(cu => cu.UserId == userId);
+        if (!isParticipant)
             return BaseResult.Failure(Error.Forbidden());
 
-        chat.ChatUsers.Remove(chatUser);
+        await chatRepository.RemoveUserAsync(chatId, userId);
 
-        if (!chat.IsGlobal && !chat.ChatUsers.Any())
+        bool hasUsers = chat.ChatUsers.Any(cu => cu.ChatId == chatId);
+
+        if (!chat.IsGlobal && !hasUsers)
         {
-            BaseResult deleteResult = await chatRepository.DeleteAsync(chat.Id);
-            return deleteResult.IsSuccess
-                ? BaseResult.Success()
-                : BaseResult.Failure(deleteResult.Error);
-        }
+            var res = await chatRepository.DeleteAsync(chatId);
 
-        BaseResult updateRes = await chatRepository.UpdateAsync(chat);
-        return updateRes.IsSuccess
-            ? BaseResult.Success()
-            : BaseResult.Failure(updateRes.Error);
+            return BaseResult.Success();
+        }
+        
+        return BaseResult.Failure(Error.NotFound());
     }
 
     public async Task<Result<ChatReadInfo>> GetGlobalChatAsync()

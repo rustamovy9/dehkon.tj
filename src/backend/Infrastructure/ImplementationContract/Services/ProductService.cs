@@ -37,7 +37,7 @@ public class ProductService(IProductRepository productRepository,ICategoryReposi
 
         Product product = productRes.Value!;
 
-        if (product.SellerId == sellerId)
+        if (product.SellerId != sellerId)
             return BaseResult.Failure(Error.Forbidden());
 
         await product.ToEntity(updateInfo,fileService,sellerId);

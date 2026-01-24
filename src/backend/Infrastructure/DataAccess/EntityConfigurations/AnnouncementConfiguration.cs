@@ -24,5 +24,6 @@ public class AnnouncementConfiguration : IEntityTypeConfiguration<Announcement>
             .WithMany()
             .HasForeignKey(x=>x.UserId)
             .OnDelete(DeleteBehavior.Restrict);
+        
     }
 }

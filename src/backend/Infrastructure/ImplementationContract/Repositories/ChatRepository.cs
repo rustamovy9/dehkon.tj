@@ -1,4 +1,6 @@
-﻿using Application.Contracts.IRepositories;
+﻿using System.Collections;
+using System.Linq.Expressions;
+using Application.Contracts.IRepositories;
 using Application.Extensions.ResultPattern;
 using Domain.Common;
 using Domain.Entities;
@@ -59,7 +61,7 @@ public class ChatRepository(DataContext dbContext)
     {
         try
         {
-            var chat = await dbContext.Chats
+            var chat = await _dbContext.Chats
                 .Include(c => c.ChatUsers)
                 .ThenInclude(u => u.User)
                 .Include(cu => cu.Messages)
@@ -73,6 +75,49 @@ public class ChatRepository(DataContext dbContext)
         catch (Exception e)
         {
             return Result<Chat>.Failure(Error.InternalServerError(e.Message));
+        }
+    }
+
+    public async Task<Result<IEnumerable<Chat>>> FindWithDetailsAsync(Expression<Func<Chat, bool>> expression)
+    {
+        try
+        {
+            var data = await _dbContext.Chats
+                .Include(c => c.ChatUsers)
+                .ThenInclude(cu => cu.User)
+                .Include(m => m.Messages)
+                .ThenInclude(m => m.Sender)
+                .Where(expression)
+                .ToListAsync();
+
+            return Result<IEnumerable<Chat>>.Success(data);
+        }
+        catch (Exception e)
+        {
+            return Result<IEnumerable<Chat>>.Failure(Error.InternalServerError(e.Message));
+        }
+    }
+    
+    
+    public async Task<BaseResult> RemoveUserAsync(int chatId, int userId)
+    {
+        try
+        {
+            var chatUser = await _dbContext.ChatUsers
+                .FirstOrDefaultAsync(cu =>
+                    cu.ChatId == chatId && cu.UserId == userId);
+
+            if (chatUser != null)
+            {
+                _dbContext.ChatUsers.Remove(chatUser);
+                await _dbContext.SaveChangesAsync();
+                return BaseResult.Success();
+            }
+            return BaseResult.Failure(Error.NotFound());
+        }
+        catch (Exception e)
+        {
+            return BaseResult.Failure(Error.InternalServerError(e.Message));
         }
     }
 }

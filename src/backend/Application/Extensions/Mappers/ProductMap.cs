@@ -27,6 +27,7 @@ public static class ProductMap
         {
             Name = createInfo.Name,
             PricePerKg = createInfo.PricePerKg,
+            ImageUrl = imagePath,
             StockPerKg = createInfo.StockPerKg,
             SellerId = sellerId,
             CategoryId = createInfo.CategoryId

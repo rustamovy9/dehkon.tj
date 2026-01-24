@@ -37,5 +37,6 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
         
         builder.HasIndex(p => p.CategoryId);
         builder.HasIndex(p => p.SellerId);
+        
     }
 }
