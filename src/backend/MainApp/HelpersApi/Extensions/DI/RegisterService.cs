@@ -1,16 +1,15 @@
-﻿using System.Reflection;
-using Application.Contracts.IRepositories;
+﻿using Application.Contracts.IRepositories;
 using Application.Contracts.IRepositories.IBaseRepository;
 using Application.Contracts.IRepositories.IBaseRepository.ICrud;
 using Application.Contracts.IServices;
 using FluentValidation;
+using FluentValidation.AspNetCore;
 using Infrastructure.DataAccess;
 using Infrastructure.Extensions.Authentication;
 using Infrastructure.ImplementationContract.Repositories;
 using Infrastructure.ImplementationContract.Repositories.BaseRepository;
 using Infrastructure.ImplementationContract.Repositories.BaseRepository.Crud;
 using Infrastructure.ImplementationContract.Services;
-using MainApp.HelpersApi.Extensions.FluentValidation;
 using MainApp.HelpersApi.Extensions.Seed;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -154,13 +153,8 @@ public static class RegisterService
         builder.Services.AddScoped<IUserService, UserService>();
 
         //registration validation
-        builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-
-        builder.Services.AddMediatR(x =>
-        {
-            x.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
-            x.AddOpenBehavior(typeof(ValidationBehavior<,>));
-        });
+        builder.Services.AddValidatorsFromAssemblyContaining<Application.Validation.Message.CreateMessageInfoValidator>();
+        builder.Services.AddFluentValidationAutoValidation();
 
         // добавляем сервисы CORS
         builder.Services.AddCors();
