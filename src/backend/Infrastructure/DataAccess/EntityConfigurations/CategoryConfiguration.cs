@@ -16,6 +16,9 @@ public class CategoryConfiguration : IEntityTypeConfiguration<Category>
 
         builder.HasIndex(x => x.Name)
             .IsUnique();
+        
+        builder.Property(p=>p.ImageUrl)
+            .HasMaxLength(500);
 
         builder.HasMany<Product>()
             .WithOne(c=>c.Category)

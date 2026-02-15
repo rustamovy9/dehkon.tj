@@ -14,12 +14,12 @@ public sealed class CategoryController(ICategoryService service) : BaseControlle
 {
     [Authorize(Roles = DefaultRoles.Admin)]
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CategoryCreateInfo createInfo)
+    public async Task<IActionResult> Create([FromForm] CategoryCreateInfo createInfo)
         => (await service.CreateAsync(createInfo)).ToActionResult();
 
     [Authorize(Roles = DefaultRoles.Admin)]
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update(int id, [FromBody] CategoryUpdateInfo updateInfo)
+    public async Task<IActionResult> Update(int id, [FromForm] CategoryUpdateInfo updateInfo)
         => (await service.UpdateAsync(id,updateInfo)).ToActionResult();
 
     [Authorize(Roles = DefaultRoles.Admin)]

@@ -1,4 +1,5 @@
-﻿using Domain.Entities;
+﻿using System.Security.AccessControl;
+using Domain.Entities;
 
 namespace Application.DTO_s;
 
@@ -20,6 +21,7 @@ public class RegisterRequest
     public string Password { get; set; } = null!;
     public string ConfirmPassword { get; set; } = null!;
 
+    public int? MarketId { get; set; }
     public string Role { get; set; } = null!;
 }
 

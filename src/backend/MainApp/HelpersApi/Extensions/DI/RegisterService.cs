@@ -2,6 +2,7 @@
 using Application.Contracts.IRepositories.IBaseRepository;
 using Application.Contracts.IRepositories.IBaseRepository.ICrud;
 using Application.Contracts.IServices;
+using Application.DTO_s;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Infrastructure.DataAccess;
@@ -126,6 +127,7 @@ public static class RegisterService
         builder.Services.AddScoped<ICartItemRepository, CartItemRepository>();
         builder.Services.AddScoped<IUserRepository, UserRepository>();
         builder.Services.AddScoped<ICartRepository, CartRepository>();
+        builder.Services.AddScoped<IMarketRepository, MarketRepository>();
         builder.Services.AddScoped<IRoleRepository, RoleRepository>();
         builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
         builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
@@ -144,6 +146,7 @@ public static class RegisterService
         builder.Services.AddScoped<ICategoryService, CategoryService>();
         builder.Services.AddScoped<IRoleService, RoleService>();
         builder.Services.AddScoped<IFileService, FileService>();
+        builder.Services.AddScoped<IMarketService, MarketService>();
         builder.Services.AddScoped<Seeder>();
         builder.Services.AddScoped<IMessageService, MessageService>();
         builder.Services.AddScoped<IOrderService, OrderService>();

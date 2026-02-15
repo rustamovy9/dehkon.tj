@@ -1,4 +1,5 @@
-﻿using Application.Contracts.IServices;
+﻿using Application.Contracts.IRepositories;
+using Application.Contracts.IServices;
 using Application.DTO_s;
 using Application.Extensions.Algorithms;
 using Application.Extensions.Mappers;
@@ -12,7 +13,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.ImplementationContract.Services;
 
-public class AuthService(DataContext dbContext,IAuthenticationService service) : IAuthService
+public class AuthService(DataContext dbContext,IAuthenticationService service,IMarketRepository marketRepository) : IAuthService
 {
     public async Task<Result<LoginResult>> LoginAsync(LoginRequest request)
     {
@@ -50,14 +51,36 @@ public class AuthService(DataContext dbContext,IAuthenticationService service) :
             roleName != DefaultRoles.Courier)
             return BaseResult.Failure(Error.BadRequest("Invalid role"));
 
+        if (roleName == DefaultRoles.Seller)
+        {
+            if (request.MarketId == null)
+                return BaseResult.Failure(Error.BadRequest("Seller must have market"));
+
+            var market = await marketRepository.GetByIdAsync(request.MarketId.Value);
+            if (!market.IsSuccess)
+                return BaseResult.Failure(Error.NotFound("Market not found"));
+        }
+        
         var role = await dbContext.Roles
             .FirstOrDefaultAsync(r=>r.Name == roleName);
         
         if(role == null)
             return BaseResult.Failure(Error.NotFound("Role not found"));
+        
 
+        
+        
         User user = request.ToEntity();
         user.RoleId = role.Id;
+        
+        if (roleName == DefaultRoles.Seller)
+        {
+            user.MarketId = request.MarketId;
+        }
+        else
+        {
+            user.MarketId = null;
+        }
 
         user.Cart = new Cart();
         

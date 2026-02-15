@@ -45,6 +45,12 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .HasMaxLength(255);
         
         builder.HasQueryFilter(c => !c.IsDeleted);
+        
+        builder
+            .HasOne(u => u.Market)
+            .WithMany(m => m.Sellers)
+            .HasForeignKey(u => u.MarketId)
+            .OnDelete(DeleteBehavior.Restrict);
 
     }
 }

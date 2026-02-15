@@ -12,7 +12,7 @@ using Infrastructure.Extensions;
 
 namespace Infrastructure.ImplementationContract.Services;
 
-public class CategoryService(ICategoryRepository repository) : ICategoryService
+public class CategoryService(ICategoryRepository repository,IFileService fileService) : ICategoryService
 {
     public async Task<Result<CategoryReadInfo>> GetByIdAsync(int id)
     {
@@ -56,7 +56,7 @@ public class CategoryService(ICategoryRepository repository) : ICategoryService
         if (findResult.Value!.Any())
             return BaseResult.Failure(Error.Conflict("Category already exists"));
 
-        Category category = createInfo.ToEntity();
+        Category category = await createInfo.ToEntity(fileService);
 
         Result<int> res = await repository.AddAsync(category);
         return res.IsSuccess
@@ -70,7 +70,7 @@ public class CategoryService(ICategoryRepository repository) : ICategoryService
         if (!existing.IsSuccess)
             return BaseResult.Failure(existing.Error);
 
-        Category category = existing.Value!.ToEntity(updateInfo);
+        Category category = await existing.Value!.ToEntity(updateInfo,fileService);
 
         Result<int> updateRes = await repository.UpdateAsync(category);
         return updateRes.IsSuccess

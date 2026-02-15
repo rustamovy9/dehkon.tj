@@ -19,6 +19,7 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
     public DbSet<Review> Reviews { get; set; }
     public DbSet<Role> Roles { get; set; }
     public DbSet<User> Users { get; set; }
+    public DbSet<Market> Markets { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

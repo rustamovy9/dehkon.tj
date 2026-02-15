@@ -12,15 +12,23 @@ using Infrastructure.Extensions;
 
 namespace Infrastructure.ImplementationContract.Services;
 
-public class ProductService(IProductRepository productRepository,ICategoryRepository categoryRepository,IFileService fileService) : IProductService
+public class ProductService(IProductRepository productRepository,ICategoryRepository categoryRepository,IUserRepository userRepository,IFileService fileService) : IProductService
 {
     public async Task<BaseResult> CreateAsync(int sellerId, ProductCreateInfo createInfo)
     {
+        var seller = await userRepository.GetByIdAsync(sellerId);
+        if (!seller.IsSuccess)
+            return BaseResult.Failure(seller.Error);
+
+        if (seller.Value!.MarketId == null)
+            return BaseResult.Failure(Error.BadRequest("Seller has no market"));
+        
         var categoryRes = await categoryRepository.GetByIdAsync(createInfo.CategoryId);
         if (!categoryRes.IsSuccess)
             return BaseResult.Failure(categoryRes.Error);
 
         Product product = await createInfo.ToEntity(fileService,sellerId);
+        
 
         var res = await productRepository.AddAsync(product);
 
@@ -80,12 +88,13 @@ public class ProductService(IProductRepository productRepository,ICategoryReposi
             Expression<Func<Product, bool>> filterExpression = product =>
                 (filter.CategoryId == null || product.CategoryId == filter.CategoryId) &&
                 (filter.SellerId == null || product.SellerId == filter.SellerId) &&
+                (filter.MarketId == null || product.Seller.MarketId == filter.MarketId) &&
                 (string.IsNullOrEmpty(filter.Name) || product.Name.ToLower().Contains(filter.Name.ToLower())) &&
                 (filter.MinPrice == null || product.PricePerKg >= filter.MinPrice) &&
                 (filter.MaxPrice == null || product.PricePerKg <= filter.MaxPrice) &&
                 (filter.InStock == null || product.StockPerKg >= filter.InStock);
 
-            var request = await  productRepository.Find(filterExpression);
+            var request = await  productRepository.FindWithSellerAsync(filterExpression);
 
             if (!request.IsSuccess)
                 return Result<PagedResponse<IEnumerable<ProductReadInfo>>>.Failure(request.Error);
