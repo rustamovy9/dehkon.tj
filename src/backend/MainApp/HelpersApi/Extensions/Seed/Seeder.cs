@@ -13,6 +13,7 @@ public class Seeder(DataContext dbContext)
         await InitRolesAsync();
         await InitUsersAsync();
         await InitGlobalChatAsync();
+        await InitMarketsAsync();
     }
 
     private async Task InitRolesAsync()
@@ -77,6 +78,29 @@ public class Seeder(DataContext dbContext)
         await dbContext.Chats.AddAsync(globalChat);
         await dbContext.SaveChangesAsync();
     }
+    
+    private async Task InitMarketsAsync()
+    {
+        foreach (Market market in SeedData.Markets)
+        {
+            Market? existing = await dbContext.Markets
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync(m => m.Id == market.Id);
+
+            if (existing is null)
+            {
+                await dbContext.Markets.AddAsync(market);
+            }
+            else if (existing.IsDeleted)
+            {
+                existing.IsDeleted = false;
+                existing.IsActive = true;
+            }
+        }
+
+        await dbContext.SaveChangesAsync();
+    }
+    
 }
 
 
@@ -132,6 +156,35 @@ file static class SeedData
             PhoneNumber = "+992222222222",
             PasswordHash = HashAlgorithms.ConvertToHash("User123!"),
             RoleId = 2
+        }
+    ];
+    
+    public static readonly List<Market> Markets =
+    [
+        new Market
+        {
+            Id = 1,
+            Name = "Мехргон",
+            Slug = "mehrgon",
+            Address = "г. Душанбе, рынок Мехргон",
+            Latitude = 38.5733,
+            Longitude = 68.7864
+        },
+        new Market
+        {
+            Id = 2,
+            Name = "Саховат",
+            Slug = "sakhovat",
+            Address = "г. Душанбе, рынок Саховат",
+            Latitude = 38.5615,
+            Longitude = 68.7733
+        },
+        new Market
+        {
+            Id = 3,
+            Name = "Корвон",
+            Slug = "korvon",
+            Address = "г. Душанбе, рынок Корвон"
         }
     ];
     
