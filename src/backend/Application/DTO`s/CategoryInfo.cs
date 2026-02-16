@@ -4,13 +4,14 @@ namespace Application.DTO_s;
 
 public record CategoryReadInfo(
     int Id,
-    string Name);
+    string Name,
+    string ImageUrl);
 
 public record CategoryCreateInfo(
-    IFormFile? ImageUrl,
-    string Name);
+    string Name,
+    IFormFile? ImageUrl);
 
 public record CategoryUpdateInfo(
-    IFormFile? ImageUrl,
-    string Name);
+    string Name,
+    IFormFile? ImageUrl);
     

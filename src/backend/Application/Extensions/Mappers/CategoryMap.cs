@@ -36,5 +36,5 @@ public static class CategoryMap
     }
 
     public static CategoryReadInfo ToRead(this Category entity)
-        => new(entity.Id, entity.Name);
+        => new(entity.Id, entity.Name,entity.ImageUrl);
 }
