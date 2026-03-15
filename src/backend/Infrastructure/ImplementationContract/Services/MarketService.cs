@@ -56,7 +56,7 @@ public class MarketService(IMarketRepository repository) : IMarketService
         var exists = await repository.Find(m =>
             m.Name.ToLower() == createInfo.Name.ToLower());
 
-        if (exists.IsSuccess)
+        if (!exists.IsSuccess)
             return BaseResult.Failure(Error.Conflict("Market already exists"));
 
         Market market = createInfo.ToEntity();
