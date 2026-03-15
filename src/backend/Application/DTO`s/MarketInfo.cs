@@ -1,6 +1,6 @@
 ﻿namespace Application.DTO_s;
 
-public abstract record MarketCreateInfo(
+public record MarketCreateInfo(
     string Name,
     string Slug,
     string Address,
